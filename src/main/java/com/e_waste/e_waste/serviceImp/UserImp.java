@@ -18,8 +18,7 @@ public class UserImp implements UserService {
     UserRepo repo;
     @Autowired
     DocStoring files;
-    @Autowired
-    DocStatus status;
+
     @Autowired
     SellerPdRepo sellerPdRepo;
     @Autowired
@@ -47,10 +46,6 @@ public class UserImp implements UserService {
 
         sellerPdRepo.save(sellerIdProof);
         UID = sellerIdProof.getSeller_id();
-      /*  SellerDocument seller_OG_Docs = new SellerDocument();
-        seller_OG_Docs.setDocument_url(IDProofPathUrl);
-        seller_OG_Docs.setStatus(status.PENDING);
-        seller_OG_Docs.setSeller_id();*/
     }
 
     @Override
@@ -58,7 +53,7 @@ public class UserImp implements UserService {
         SellerDocument seller_OG_Docs = new SellerDocument();
         SellerPD sellerPersonalDetailsEnity = sellerPdRepo.findById(UID).orElse(null);
         seller_OG_Docs.setDocument_url(IDProofPathUrl);
-        seller_OG_Docs.setStatus(status.PENDING);
+        seller_OG_Docs.setStatus(DocStatus.VERIFIED);
         seller_OG_Docs.setSeller_id(sellerPersonalDetailsEnity);
         sellerDocsRepo.save(seller_OG_Docs);
     }
