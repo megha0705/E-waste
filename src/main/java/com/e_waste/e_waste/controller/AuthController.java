@@ -16,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-import static com.sun.beans.introspect.PropertyInfo.Name.required;
+//import static com.sun.beans.introspect.PropertyInfo.Name.required;
 
-@RequestMapping("seller")
+
 @RestController
 public class AuthController {
 
@@ -29,10 +29,10 @@ public class AuthController {
         UserRepo repo;
         @Autowired
         DocStoring file;
-        int userRealId = 0;
+        int userRealId = 1;
         @PostMapping("/login")
-        public String loginUser(@RequestParam String userName , @RequestParam String password){
-                UserSignUpEntity user = repo.findByName(userName);
+        public String loginUser(@RequestParam String name , @RequestParam String password){
+                UserSignUpEntity user = repo.findByName(name);
                 String bycrptPassword = user.getPassword();
                 if(user != null && passwordEncoder.matches(password , bycrptPassword)){
                          userRealId = user.getId();
@@ -45,24 +45,25 @@ public class AuthController {
                 return "idk bro";
                 //redirect to another page
         }
-
+        @PostMapping("/IdProof")
         public String identificationProof(@RequestParam(required = false) String gstNumber
                 , @RequestParam(required = false) String pan_number
                 , @RequestParam(required = false) MultipartFile panCard
                 , @RequestParam(required =false) MultipartFile gstCard ) throws IOException {
 
-                if((gstNumber != null && !gstCard.isEmpty()) || (pan_number != null && !panCard.isEmpty())){
+                if((gstNumber != null && gstCard != null && !gstCard.isEmpty()) || (pan_number != null && panCard != null && !panCard.isEmpty())){
                         String filePathUrl = " ";
-                        if(!gstCard.isEmpty()){
+                        if(gstCard !=null && !gstCard.isEmpty()){
                           filePathUrl =   file.fileSaving(gstCard);
                            s.userIdProof(gstNumber,pan_number,userRealId);
                            s.userIdProofDocs(filePathUrl);
                         }
-                        else{
+                        else if (panCard != null && !panCard.isEmpty()){
                           filePathUrl =    file.fileSaving(panCard);
                           s.userIdProof(gstNumber,pan_number,userRealId);
                           s.userIdProofDocs(filePathUrl);
                 }
                 }
+                return "worked succesfully";
         }
 }
