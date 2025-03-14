@@ -2,16 +2,15 @@ package com.e_waste.e_waste.controller;
 
 import com.e_waste.e_waste.documentManage.DocStoring;
 import com.e_waste.e_waste.entity.Role;
+import com.e_waste.e_waste.entity.SellerPD;
 import com.e_waste.e_waste.entity.UserSignUpEntity;
+import com.e_waste.e_waste.repository.SellerPdRepo;
 import com.e_waste.e_waste.repository.UserRepo;
 import com.e_waste.e_waste.serviceImp.UserImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,6 +25,8 @@ public class AuthController {
         @Autowired
         UserImp s;
         @Autowired
+        SellerPdRepo pdRepo;
+        @Autowired
         UserRepo repo;
         @Autowired
         DocStoring file;
@@ -39,6 +40,8 @@ public class AuthController {
                         String role = String.valueOf(user.getRole());
                         if(role.equals("SELLER")){
                                 return " you are a seller!!!";
+                                //here  i wil check whether the seller has the registered id if no then redirect them to the verification process
+                                //if yes then redirect them to their dashboard.
                         }
 
                 }
@@ -65,5 +68,33 @@ public class AuthController {
                 }
                 }
                 return "worked succesfully";
+        }
+        @PutMapping("uniId/{id}")
+        public String itemDetails(@PathVariable int id ,
+                                  @RequestParam String shop_name
+                                  ,@RequestParam String business_category,
+                                  @RequestParam String address ,
+                                  @RequestParam String city ,
+                                  @RequestParam String pincode ,
+                                  @RequestParam String state){
+                SellerPD seller_personal_Details = pdRepo.findById(id).orElse(null);
+                seller_personal_Details.setBusiness_category(business_category);
+                seller_personal_Details.setAddress(address);
+                seller_personal_Details.setPinCode(pincode);
+                seller_personal_Details.setState(state);
+                seller_personal_Details.setCity(city);
+                seller_personal_Details.setShop_name(shop_name);
+                pdRepo.save(seller_personal_Details);
+                return "personal details has been saved succesfully";
+
+        }
+        @PostMapping("bankDetails")
+        public String sellerBankDetails(@RequestParam String account_holder_name ,
+                                        @RequestParam String bank_name ,
+                                        @RequestParam String account_number,
+                                        @RequestParam String ifsc_code){
+
+                s.sellerBankDetails(account_holder_name , bank_name , account_number , ifsc_code);
+                return "bank details has been saved successfully";
         }
 }
