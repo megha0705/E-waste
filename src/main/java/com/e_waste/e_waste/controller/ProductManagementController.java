@@ -76,4 +76,10 @@ public class ProductManagementController {
         productRepo.save(productDetails);
         return "product has been updated succesfully";
     }
+    @DeleteMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable int id){
+        productRepo.deleteById(id);
+        return "product has been deleted succesfully";
+
+    }
 }
